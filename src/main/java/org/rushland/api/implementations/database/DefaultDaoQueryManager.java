@@ -1,4 +1,4 @@
-package org.rushland.api.database;
+package org.rushland.api.implementations.database;
 
 import com.google.inject.Inject;
 import org.rushland.api.interfaces.database.DaoQueryManager;

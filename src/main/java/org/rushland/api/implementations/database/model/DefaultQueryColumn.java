@@ -1,4 +1,4 @@
-package org.rushland.api.database.model;
+package org.rushland.api.implementations.database.model;
 
 import lombok.Getter;
 import org.rushland.api.interfaces.database.model.QueryColumn;
