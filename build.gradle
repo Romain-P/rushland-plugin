@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+sourceCompatibility = 1.7
+
+ext.lombok = '1.14.0'
+ext.guice = '3.0'
+ext.guicem = '3.0'
+ext.mysql = '5.1.6'
+ext.bukkit = '1.7.9-R0.2'
+
+configurations {
+    provided
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.bukkit.org/content/groups/public/" }
+}
+
+dependencies {
+    provided "org.projectlombok:lombok:$lombok"
+    provided "org.bukkit:bukkit:$bukkit"
+    compile "com.google.inject:guice:$guice"
+    compile "com.google.inject.extensions:guice-multibindings:$guicem"
+    compile "mysql:mysql-connector-java:$mysql"
+}
+
+sourceSets {
+    main { compileClasspath += configurations.provided }
+}
+
+idea { module { scopes.PROVIDED.plus += configurations.provided } }
