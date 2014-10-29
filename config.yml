@@ -1,0 +1,9 @@
+#Rushland configuration
+
+#Configure your mysql database connection
+database:
+ host: 127.0.0.1
+ name: rushland
+ user: root
+ pass:
+
