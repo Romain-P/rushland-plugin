@@ -33,7 +33,9 @@ public class ClientManager extends DefaultDaoQueryManager<Client>{
                     .setData("pvpDeaths", obj.getPvpDeaths())
                     .setData("pvpWins", obj.getPvpWins())
                     .setData("pvmRatio", obj.getPvmRatio())
-                    .setData("pvpRatio", obj.getPvpRatio());
+                    .setData("pvpRatio", obj.getPvpRatio())
+                    .setData("grade", obj.getGrade())
+                    .setData("gradeTime", obj.getGradeTime());
             execute(query, OnlyExecuteQueryEnum.CREATE);
         } catch (Exception exception) {
             plugin.getLogger().warning(exception.getMessage());
@@ -63,7 +65,9 @@ public class ClientManager extends DefaultDaoQueryManager<Client>{
                     .setData("pvpDeaths", obj.getPvpDeaths())
                     .setData("pvpWins", obj.getPvpWins())
                     .setData("pvmRatio", obj.getPvmRatio())
-                    .setData("pvpRatio", obj.getPvpRatio());
+                    .setData("pvpRatio", obj.getPvpRatio())
+                    .setData("grade", obj.getGrade())
+                    .setData("gradeTime", obj.getGradeTime());
             execute(query, OnlyExecuteQueryEnum.UPDATE);
         } catch (Exception exception) {
             plugin.getLogger().warning(exception.getMessage());
@@ -82,7 +86,9 @@ public class ClientManager extends DefaultDaoQueryManager<Client>{
                     (int) query.getData().get("pvmDeaths"),
                     (int) query.getData().get("pvmWins"),
                     (int) query.getData().get("pvpDeaths"),
-                    (int) query.getData().get("pvpWins"));
+                    (int) query.getData().get("pvpWins"),
+                    (int) query.getData().get("grade"),
+                    (int) query.getData().get("gradeTime"));
         } catch (SQLException exception) {
             plugin.getLogger().warning(exception.getMessage());
             return null;

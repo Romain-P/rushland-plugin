@@ -31,8 +31,10 @@ public class Client {
     private int pvmDeaths, pvmWins, pvpDeaths, pvpWins;
     @QueryField
     private double pvmRatio, pvpRatio;
+    @Getter
     @QueryField
     private int grade;
+    @Getter
     @QueryField
     private long gradeTime;
     @Getter
@@ -49,10 +51,10 @@ public class Client {
     public Client() {this(null);}
 
     public Client(String uuid) {
-        this(uuid, null, 0, 0, 0, 0, 0);
+        this(uuid, null, 0, 0, 0, 0, 0, 0, 0);
     }
 
-    public Client(String uuid, String name, long money, int pvmDeaths, int pvmWins, int pvpDeaths, int pvpWins) {
+    public Client(String uuid, String name, long money, int pvmDeaths, int pvmWins, int pvpDeaths, int pvpWins, int grade, long gradeTime) {
         this.uuid = uuid;
         this.name = name == null ? plugin.getServer().getPlayer(UUID.fromString(uuid)).getName() : name;
         this.money = money;
@@ -60,6 +62,8 @@ public class Client {
         this.pvmWins = pvmWins;
         this.pvpDeaths = pvpDeaths;
         this.pvpWins = pvpWins;
+        this.grade = grade;
+        this.gradeTime = gradeTime;
         this.manager = (DaoQueryManager<Client>) database.getQueryManagers().get(getClass());
     }
 
