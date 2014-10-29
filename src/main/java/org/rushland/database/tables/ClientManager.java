@@ -6,7 +6,7 @@ import org.rushland.api.implementations.database.DefaultDaoQueryManager;
 import org.rushland.api.implementations.database.model.DefaultQueryModel;
 import org.rushland.api.interfaces.database.model.Query;
 import org.rushland.api.interfaces.database.model.enums.OnlyExecuteQueryEnum;
-import org.rushland.contents.entities.Client;
+import org.rushland.plugin.entities.Client;
 
 import java.sql.SQLException;
 

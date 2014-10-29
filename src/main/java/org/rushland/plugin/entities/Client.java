@@ -1,4 +1,4 @@
-package org.rushland.contents.entities;
+package org.rushland.plugin.entities;
 
 import com.google.inject.Inject;
 import lombok.Getter;
