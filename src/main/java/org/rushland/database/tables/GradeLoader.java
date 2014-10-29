@@ -1,6 +1,7 @@
 package org.rushland.database.tables;
 
 import com.google.inject.Inject;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.api.implementations.database.DefaultDlaoQueryManager;
 import org.rushland.api.implementations.database.model.DefaultQueryModel;
@@ -30,7 +31,11 @@ public class GradeLoader extends DefaultDlaoQueryManager {
 
             for(Query query: queries) {
                 int id = (int) query.getData().get("id");
-                factory.getGrades().put(id, new Grade(id, (String) query.getData().get("prefix")));
+                String prefix = (String) query.getData().get("prefix");
+                for(ChatColor color: ChatColor.values())
+                    if(prefix.contains(color.name()))
+                        prefix = prefix.replace(color.name(), color.toString());
+                factory.getGrades().put(id, new Grade(id, prefix));
             }
         } catch (SQLException exception) {
             plugin.getLogger().warning(exception.getMessage());
