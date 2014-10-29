@@ -1,0 +1,5 @@
+name: rushland
+main: org.rushland.core.Main
+version: 1.0
+description: default rushland plugin
+author: romain

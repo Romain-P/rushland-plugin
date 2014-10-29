@@ -8,8 +8,10 @@ import org.rushland.api.interfaces.database.DaoQueryManager;
 import org.rushland.api.interfaces.database.model.annotations.PrimaryQueryField;
 import org.rushland.api.interfaces.database.model.annotations.QueryField;
 import org.rushland.database.RushlandDatabaseService;
+import org.rushland.plugin.PluginFactory;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Managed by romain on 29/10/2014.
@@ -29,6 +31,10 @@ public class Client {
     private int pvmDeaths, pvmWins, pvpDeaths, pvpWins;
     @QueryField
     private double pvmRatio, pvpRatio;
+    @QueryField
+    private int grade;
+    @QueryField
+    private long gradeTime;
     @Getter
     private Player player;
     private final DaoQueryManager<Client> manager;
@@ -37,6 +43,8 @@ public class Client {
     RushlandDatabaseService database;
     @Inject
     JavaPlugin plugin;
+    @Inject
+    PluginFactory factory;
 
     public Client() {this(null);}
 
@@ -88,7 +96,31 @@ public class Client {
     }
 
     public Player getPlayer() {
-        return player != null ? player : (player = plugin.getServer().getPlayer(name));
+        return player != null ? player : (player = plugin.getServer().getPlayer(UUID.fromString(uuid)));
+    }
+
+    public void subscribe(int grade, long gradeTime, TimeUnit unity) {
+        this.grade = grade;
+        this.gradeTime = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(gradeTime, unity);
+
+        save();
+    }
+
+    public void unsubscribe() {
+        if(player != null)
+            player.setDisplayName(player.getDisplayName().replace(factory.getGrades().get(grade).getPrefix(), ""));
+
+        grade = 0;
+        gradeTime = 0;
+        save();
+    }
+
+    private boolean isSubscriber() {
+        boolean subscribed = this.gradeTime == -1 ||
+                System.currentTimeMillis() < this.gradeTime;
+        if(!subscribed && this.gradeTime > 0)
+            this.unsubscribe();
+        return subscribed;
     }
 
     public void save() {
