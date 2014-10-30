@@ -1,5 +1,10 @@
 #Rushland configuration
 
+#Configure this plugin priority
+plugin:
+ main: true
+ slots: -1
+
 #Configure your mysql database connection
 database:
  host: 127.0.0.1
