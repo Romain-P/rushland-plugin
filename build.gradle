@@ -9,6 +9,7 @@ ext.guice = '3.0'
 ext.guicem = '3.0'
 ext.mysql = '5.1.6'
 ext.bukkit = '1.7.9-R0.2'
+ext.junit = '4.11'
 
 configurations {
     provided
@@ -29,6 +30,8 @@ dependencies {
     compile "com.google.inject:guice:$guice"
     compile "com.google.inject.extensions:guice-multibindings:$guicem"
     compile "mysql:mysql-connector-java:$mysql"
+
+    testCompile "junit:junit:$junit"
 }
 
 sourceSets {
