@@ -1,8 +1,8 @@
 #Rushland configuration
 
-#Configure this plugin priority
+#Configure your key & slots (keys = main|lobby|pvp)
 plugin:
- main: true
+ key: main
  slots: -1
 
 #Configure your mysql database connection

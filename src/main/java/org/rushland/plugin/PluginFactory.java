@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.plugin.entities.Client;
 import org.rushland.plugin.entities.Grade;
+import org.rushland.plugin.enums.PluginType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,14 +15,14 @@ import java.util.Map;
  */
 @Getter
 public class PluginFactory {
-    public final boolean main;
+    public final PluginType type;
     public final long slots;
     public final Map<String, Client> clients;
     public final Map<Integer, Grade> grades;
 
     @Inject
     public PluginFactory(JavaPlugin plugin) {
-        this.main = plugin.getConfig().getBoolean("plugin.main");
+        this.type = PluginType.get(plugin.getConfig().getString("plugin.key"));
         this.slots = plugin.getConfig().getLong("plugin.slots");
         this.clients = new HashMap<>();
         this.grades = new HashMap<>();
