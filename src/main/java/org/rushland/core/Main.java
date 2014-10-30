@@ -2,11 +2,15 @@ package org.rushland.core;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.rushland.api.interfaces.bukkit.ImprovedListener;
 import org.rushland.api.interfaces.database.DatabaseService;
 import org.rushland.database.DatabaseModule;
+import org.rushland.plugin.PluginFactory;
 import org.rushland.plugin.PluginModule;
+import org.rushland.plugin.entities.Client;
 
 import java.sql.SQLException;
 import java.util.Set;
@@ -18,7 +22,9 @@ public class Main extends JavaPlugin {
     @Inject
     DatabaseService database;
     @Inject
-    Set<Listener> listeners;
+    Set<ImprovedListener> listeners;
+    @Inject
+    PluginFactory factory;
 
     public void onEnable() {
         getLogger().info("creating guice injector..");
@@ -43,7 +49,16 @@ public class Main extends JavaPlugin {
     }
 
     public void onDisable() {
+        getLogger().info("saving players..");
+        for(Client client: factory.getClients().values())
+            client.save();
+
         getLogger().info("stopping database..");
         database.stop();
+
+        getLogger().info("unregistering listeners..");
+        HandlerList.unregisterAll(this);
+
+        getLogger().info("plugin is now disabled");
     }
 }
