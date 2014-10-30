@@ -1,5 +1,6 @@
 package org.rushland.plugin.entities;
 
+import lombok.*;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +13,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
 public class Item {
     @PrimaryQueryField
     private int id;
@@ -31,19 +36,8 @@ public class Item {
     @QueryField
     private String enchantments;
 
+    @Getter(AccessLevel.NONE)
     private Map<Enchantment, Integer> enchantmentsCache;
-
-    public Item() {
-    }
-
-    public Item(int id, String name, String description, int grade, int quantity, String enchantments) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.grade = grade;
-        this.quantity = quantity;
-        this.enchantments = enchantments;
-    }
 
     Map<Enchantment, Integer> parseEnchantments0() {
         if (enchantments.isEmpty()) {
@@ -95,53 +89,5 @@ public class Item {
         result.setItemMeta(meta);
 
         return result;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getGrade() {
-        return grade;
-    }
-
-    public void setGrade(int grade) {
-        this.grade = grade;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getEnchantments() {
-        return enchantments;
-    }
-
-    public void setEnchantments(String enchantments) {
-        this.enchantments = enchantments;
     }
 }
