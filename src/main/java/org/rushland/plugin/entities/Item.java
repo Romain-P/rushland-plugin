@@ -14,27 +14,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-@Setter
-@NoArgsConstructor
 @RequiredArgsConstructor
 public class Item {
     @PrimaryQueryField
-    private int id;
+    private final int id;
 
     @QueryField
-    private String name;
+    private final String name;
 
     @QueryField
-    private String description;
+    private final String description;
 
     @QueryField
-    private int grade;
+    private final int grade;
 
     @QueryField
-    private int quantity;
+    private final int quantity;
 
     @QueryField
-    private String enchantments;
+    private final String enchantments;
 
     @Getter(AccessLevel.NONE)
     private Map<Enchantment, Integer> enchantmentsCache;
