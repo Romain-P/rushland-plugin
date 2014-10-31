@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.api.interfaces.database.DaoQueryManager;
 import org.rushland.api.interfaces.database.model.annotations.PrimaryQueryField;
 import org.rushland.api.interfaces.database.model.annotations.QueryField;
-import org.rushland.database.RushlandDatabaseService;
+import org.rushland.database.PluginDatabaseService;
 import org.rushland.plugin.PluginFactory;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class Client {
     private final DaoQueryManager<Client> manager;
 
     @Inject
-    RushlandDatabaseService database;
+    PluginDatabaseService database;
     @Inject
     JavaPlugin plugin;
     @Inject

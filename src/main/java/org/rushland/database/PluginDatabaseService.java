@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Managed by romain on 29/10/2014.
  */
-public class RushlandDatabaseService implements DatabaseService{
+public class PluginDatabaseService implements DatabaseService{
     @Getter
     private final ReentrantLock locker;
     @Getter
@@ -36,13 +36,13 @@ public class RushlandDatabaseService implements DatabaseService{
     @Inject
     JavaPlugin plugin;
 
-    public RushlandDatabaseService() {
+    public PluginDatabaseService() {
         this.locker = new ReentrantLock();
         this.queryManagers = new HashMap<>();
         this.loadManagers = new HashMap<>();
     }
 
-    public RushlandDatabaseService start() throws SQLException {
+    public PluginDatabaseService start() throws SQLException {
         FileConfiguration config = plugin.getConfig();
         connection = DriverManager.getConnection("jdbc:mysql://" +
                         config.getString("database.host") + "/" +
