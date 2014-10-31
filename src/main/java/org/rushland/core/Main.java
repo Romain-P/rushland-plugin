@@ -11,6 +11,7 @@ import org.rushland.database.DatabaseModule;
 import org.rushland.plugin.PluginFactory;
 import org.rushland.plugin.PluginModule;
 import org.rushland.plugin.entities.Client;
+import org.rushland.plugin.network.PluginNetworkService;
 
 import java.sql.SQLException;
 import java.util.Set;
@@ -23,6 +24,8 @@ public class Main extends JavaPlugin {
     DatabaseService database;
     @Inject
     Set<ImprovedListener> listeners;
+    @Inject
+    PluginNetworkService network;
     @Inject
     PluginFactory factory;
 
@@ -45,6 +48,9 @@ public class Main extends JavaPlugin {
         for(Listener listener: listeners)
             getServer().getPluginManager().registerEvents(listener, this);
 
+        getLogger().info("enabling network..");
+        network.start();
+
         getLogger().info("plugin is now enabled!");
     }
 
@@ -58,6 +64,9 @@ public class Main extends JavaPlugin {
 
         getLogger().info("unregistering listeners..");
         HandlerList.unregisterAll(this);
+
+        getLogger().info("disabling network");
+        network.stop();
 
         getLogger().info("plugin is now disabled");
     }

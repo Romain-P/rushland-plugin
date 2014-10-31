@@ -1,0 +1,21 @@
+#Rushland configuration
+
+#Configure your mysql database connection
+database:
+ host: 127.0.0.1
+ name: rushland
+ user: root
+ pass:
+
+#Configure differents names of lobby/pvp servers
+server-names:
+ main: main
+ pvp: pvp
+ lobbies:
+  - lobby1
+  - lobby2
+  - lobby3
+  - lobby4
+  - lobby5
+  - lobby6
+  - lobby7
