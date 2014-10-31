@@ -19,3 +19,11 @@ server-names:
   - lobby5
   - lobby6
   - lobby7
+
+#Configure name & colors of board titles (gametypes)
+#See also http://ess.khhq.net/mc/ for
+gametype-names:
+ rush: [&4Rush&r]
+ antwar: [&4AntWar&r]
+ devided: [&4Devided-Together&r]
+ tower: [&4The-Tower&r]
