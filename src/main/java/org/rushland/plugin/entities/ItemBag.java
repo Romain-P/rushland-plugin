@@ -20,6 +20,9 @@ public class ItemBag {
     private final int id;
 
     @QueryField
+    private final int iconId;
+
+    @QueryField
     private final String itemsId;
 
     @QueryField
