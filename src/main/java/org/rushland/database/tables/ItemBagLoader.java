@@ -27,7 +27,7 @@ public class ItemBagLoader extends DefaultDlaoQueryManager {
         for (Query query : createNewQueries()) {
             ItemBag itemBag = new ItemBag(
                     (int) query.getData().get("id"),
-                    (int) query.getData().get("itemId"),
+                    (String) query.getData().get("itemsId"),
                     (String) query.getData().get("name"),
                     (String) query.getData().get("allowedGames")
             );

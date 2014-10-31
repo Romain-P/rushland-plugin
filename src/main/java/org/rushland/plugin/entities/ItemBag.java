@@ -18,7 +18,7 @@ public class ItemBag {
     private final int id;
 
     @QueryField
-    private final int itemId;
+    private final String itemsId;
 
     @QueryField
     private final String name;
@@ -26,9 +26,21 @@ public class ItemBag {
     @QueryField
     private final String allowedGames;
 
+    private List<Integer> itemsIdCache;
     private List<GameType> allowedGamesCache;
 
     @Inject PluginFactory factory;
+
+    List<Integer> parseItemsId() {
+        List<Integer> result = new ArrayList<>();
+
+        for (String itemId : itemsId.split(",")) {
+            int id = Integer.parseInt(itemId);
+            result.add(id);
+        }
+
+        return result;
+    }
 
     List<GameType> parseAllowedGames() {
         List<GameType> result = new ArrayList<>();
@@ -45,6 +57,13 @@ public class ItemBag {
         return result;
     }
 
+    public List<Integer> getItemsId() {
+        if (itemsIdCache == null) {
+            itemsIdCache = parseItemsId();
+        }
+        return itemsIdCache;
+    }
+
     public List<GameType> getAllowedGames() {
         if (allowedGamesCache == null) {
             allowedGamesCache = parseAllowedGames();
@@ -56,7 +75,12 @@ public class ItemBag {
         return getAllowedGames().contains(type);
     }
 
-    public Item getItem() {
-        return factory.getItems().get(itemId);
+    public List<Item> getItems() {
+        List<Item> items = new ArrayList<>();
+        for (Integer itemId : getItemsId()) {
+            Item item = factory.getItems().get(itemId);
+            items.add(item);
+        }
+        return items;
     }
 }
