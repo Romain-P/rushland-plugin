@@ -9,14 +9,6 @@ public enum PluginType {
     PVP;
 
     public static PluginType get(String name) {
-        switch(name) {
-            case "main":
-                return MAIN;
-            case "pvp":
-                return PVP;
-            case "lobby":
-            default:
-                return LOBBY;
-        }
+        return valueOf(name.toUpperCase());
     }
 }
