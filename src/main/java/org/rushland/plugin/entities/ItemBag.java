@@ -2,6 +2,8 @@ package org.rushland.plugin.entities;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.Inventory;
 import org.rushland.api.interfaces.database.model.annotations.PrimaryQueryField;
 import org.rushland.api.interfaces.database.model.annotations.QueryField;
 import org.rushland.plugin.PluginFactory;
@@ -82,5 +84,14 @@ public class ItemBag {
             items.add(item);
         }
         return items;
+    }
+
+    public Inventory generateInventory() {
+        List<Item> items = getItems();
+        Inventory result = Bukkit.createInventory(null, (items.size() % 9 + 1) * 9, name);
+        for (Item item : items) {
+            result.addItem(item.generate());
+        }
+        return result;
     }
 }
