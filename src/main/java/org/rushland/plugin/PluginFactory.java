@@ -4,12 +4,14 @@ import com.google.inject.Inject;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.plugin.entities.Client;
 import org.rushland.plugin.entities.Grade;
 import org.rushland.plugin.entities.Item;
 import org.rushland.plugin.enums.PluginType;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,16 +21,24 @@ import java.util.Map;
  */
 @Getter
 public class PluginFactory {
-    public final PluginType type;
-    public final long slots;
-    public final Map<String, Client> clients;
-    public final Map<Integer, Grade> grades;
-    public final Map<Integer, Item> items;
+    private final PluginType type;
+    private final long slots;
+    private final String[] lobbyNames;
+    private final String pvpName, mainName;
+    private final Map<String, Client> clients;
+    private final Map<Integer, Grade> grades;
+    private final Map<Integer, Item> items;
 
     @Inject
     public PluginFactory(JavaPlugin plugin) {
-        this.type = PluginType.get(plugin.getConfig().getString("plugin.key"));
+        this.type = PluginType.get(plugin.getConfig().getString("plugin.type"));
         this.slots = plugin.getConfig().getLong("plugin.slots");
+
+        YamlConfiguration mainConfig = YamlConfiguration.loadConfiguration(new File(plugin.getConfig().getString("config.path")));
+        this.lobbyNames = mainConfig.getStringList("server-names.lobbies").toArray(new String[] {});
+        this.pvpName = mainConfig.getString("server-names.pvp");
+        this.mainName = mainConfig.getString("server-names.main");
+
         this.clients = new HashMap<>();
         this.grades = new HashMap<>();
         this.items = new HashMap<>();

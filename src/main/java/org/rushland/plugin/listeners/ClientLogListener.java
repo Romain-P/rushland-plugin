@@ -10,6 +10,8 @@ import org.rushland.api.interfaces.database.DaoQueryManager;
 import org.rushland.api.interfaces.database.DatabaseService;
 import org.rushland.plugin.PluginFactory;
 import org.rushland.plugin.entities.Client;
+import org.rushland.plugin.enums.PluginType;
+import org.rushland.plugin.network.PluginNetworkService;
 
 import java.util.Set;
 
@@ -21,9 +23,10 @@ public class ClientLogListener extends ImprovedListener {
 
     @Inject
     PluginFactory factory;
-
     @Inject
     Set<ImprovedListener> listeners;
+    @Inject
+    PluginNetworkService network;
 
     @Inject
     public ClientLogListener(DatabaseService database) {
@@ -33,24 +36,32 @@ public class ClientLogListener extends ImprovedListener {
     @EventHandler
     public void onConnect(PlayerJoinEvent event) {
         Player player = get(event);
-        Client client = manager.load(player.getName());
+        Client client = manager.load(player.getUniqueId());
 
         if(client == null)
-            client = new Client(player.getName()).create();
+            client = new Client(player.getUniqueId().toString()).create();
 
-        factory.getClients().put(player.getName(), client);
+        factory.getClients().put(player.getUniqueId().toString(), client);
         player.sendMessage("Bienvenue sur Rushland");
     }
 
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
         Player player = get(event);
-        Client client = factory.getClients().get(player);
+        Client client = factory.getClients().get(player.getUniqueId().toString());
 
         for(ImprovedListener listener: listeners)
             listener.pullPlayer(player);
 
+        if(factory.getType() == PluginType.MAIN) {
+            /** clearing the cache **/
+            for(String server: client.getCachedLobbies())
+                network.sendMessage(player, server, "disconnected");
+
+            factory.getClients().remove(client.getUuid());
+        } else
+            network.sendMessage(player, factory.getMainName(), "disconnected");
+
         client.save();
-        factory.getClients().remove(client.getName());
     }
 }

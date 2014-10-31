@@ -10,6 +10,8 @@ import org.rushland.api.interfaces.database.model.annotations.QueryField;
 import org.rushland.database.RushlandDatabaseService;
 import org.rushland.plugin.PluginFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +41,8 @@ public class Client {
     private long gradeTime;
     @Getter
     private Player player;
+    @Getter
+    private final List<String> cachedLobbies;
     private final DaoQueryManager<Client> manager;
 
     @Inject
@@ -64,6 +68,7 @@ public class Client {
         this.pvpWins = pvpWins;
         this.grade = grade;
         this.gradeTime = gradeTime;
+        this.cachedLobbies = new ArrayList<>();
         this.manager = (DaoQueryManager<Client>) database.getQueryManagers().get(getClass());
     }
 
@@ -125,6 +130,11 @@ public class Client {
         if(!subscribed && this.gradeTime > 0)
             this.unsubscribe();
         return subscribed;
+    }
+
+    public void addNewCachedLobby(String name) {
+        if(!cachedLobbies.contains(name))
+            cachedLobbies.add(name);
     }
 
     public void save() {
