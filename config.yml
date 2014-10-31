@@ -1,13 +1,10 @@
-#Rushland configuration
+#Plugin configuration
 
-#Configure your key & slots (keys = main|lobby|pvp)
+#Rushland configuration path
+config:
+ path: ../
+
+#Configure your slots & type (types = main|lobby|pvp)
 plugin:
- key: main
+ type: main
  slots: -1
-
-#Configure your mysql database connection
-database:
- host: 127.0.0.1
- name: rushland
- user: root
- pass:
