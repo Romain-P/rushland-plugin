@@ -14,7 +14,7 @@ import org.rushland.database.tables.GradeLoader;
 public class DatabaseModule extends AbstractModule{
     @Override
     protected void configure() {
-        bind(DatabaseService.class).to(RushlandDatabaseService.class);
+        bind(DatabaseService.class).to(PluginDatabaseService.class);
 
         Multibinder<DaoQueryManager> managers = Multibinder.newSetBinder(binder(), DaoQueryManager.class);
         managers.addBinding().to(ClientManager.class).asEagerSingleton();
