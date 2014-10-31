@@ -89,6 +89,10 @@ public class ItemBag {
         return items;
     }
 
+    public Item getIcon() {
+        return factory.getItems().get(iconId);
+    }
+
     public Inventory generateInventory() {
         List<Item> items = getItems();
         Inventory result = Bukkit.createInventory(null, (items.size() % 9 + 1) * 9, name);
