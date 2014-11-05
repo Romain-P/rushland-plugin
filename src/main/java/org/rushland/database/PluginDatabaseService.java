@@ -2,11 +2,12 @@ package org.rushland.database;
 
 import com.google.inject.Inject;
 import lombok.Getter;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.api.interfaces.database.DaoQueryManager;
 import org.rushland.api.interfaces.database.DatabaseService;
 import org.rushland.api.interfaces.database.DlaoQueryManager;
+import org.rushland.plugin.PluginFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,6 +36,8 @@ public class PluginDatabaseService implements DatabaseService{
     Set<DlaoQueryManager> lManagers;
     @Inject
     JavaPlugin plugin;
+    @Inject
+    PluginFactory factory;
 
     public PluginDatabaseService() {
         this.locker = new ReentrantLock();
@@ -43,7 +46,7 @@ public class PluginDatabaseService implements DatabaseService{
     }
 
     public PluginDatabaseService start() throws SQLException {
-        FileConfiguration config = plugin.getConfig();
+        YamlConfiguration config = factory.getMainConfig();
         connection = DriverManager.getConnection("jdbc:mysql://" +
                         config.getString("database.host") + "/" +
                         config.getString("database.name"),
@@ -60,8 +63,9 @@ public class PluginDatabaseService implements DatabaseService{
         }
 
         plugin.getLogger().info("static data loaded!");
-        for(DaoQueryManager manager: managers)
+        for(DaoQueryManager manager: managers) {
             queryManagers.put(manager.getClass(), manager);
+        }
 
         return this;
     }

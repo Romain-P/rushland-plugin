@@ -40,11 +40,14 @@ public class Main extends JavaPlugin {
             getLogger().warning(String.format("error when trying to start the database: %s", e.getMessage()));
             getLogger().warning("the server can't start.. stopping the server..");
             getServer().dispatchCommand(this.getServer().getConsoleSender(), "save-all");
-            getServer().dispatchCommand(this.getServer().getConsoleSender(), "stop");
+            getServer().dispatchCommand(this.getServer().getConsoleSender(), "end");
             return;
         }
 
-        getLogger().info("registering listeners");
+        getLogger().info("configuring the plugin factory..");
+        factory.configure();
+
+        getLogger().info("registering listeners..");
         for(Listener listener: listeners)
             getServer().getPluginManager().registerEvents(listener, this);
 

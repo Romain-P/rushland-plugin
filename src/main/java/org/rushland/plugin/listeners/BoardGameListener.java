@@ -9,6 +9,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.rushland.api.interfaces.bukkit.ImprovedListener;
 import org.rushland.plugin.PluginFactory;
+import org.rushland.plugin.entities.Client;
+import org.rushland.plugin.enums.PluginType;
+import org.rushland.plugin.games.GameManager;
 
 /**
  * Managed by romain on 31/10/2014.
@@ -16,17 +19,19 @@ import org.rushland.plugin.PluginFactory;
 public class BoardGameListener extends ImprovedListener{
     @Inject
     PluginFactory factory;
+    @Inject
+    GameManager gameManager;
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if(event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if(factory.getType() != PluginType.MAIN || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
         Block block = event.getClickedBlock();
         if(block.getType() != Material.WALL_SIGN && block.getType() != Material.SIGN_POST) return;
 
-        Sign sign = block instanceof Sign ? (Sign) block.getState() : null;
-        if(sign == null) return;
+        Sign sign = (Sign) block.getState(); //block instanceof Sign ? (Sign) block.getState() : null;
 
-        //TODO: create or join a game
+        Client client = factory.getClients().get(event.getPlayer().getUniqueId().toString());
+        gameManager.askJoin(client, sign);
     }
 }

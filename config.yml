@@ -2,9 +2,8 @@
 
 #Rushland configuration path
 config:
- path: ../
+ path: ../rushland.yml
 
 #Configure your slots & type (types = main|lobby|pvp)
 plugin:
  type: main
- slots: -1

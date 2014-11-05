@@ -18,7 +18,7 @@ import java.io.IOException;
  * Managed by romain on 31/10/2014.
  */
 public class PluginNetworkService {
-    private final PluginMessageListener handler;
+    private PluginMessageListener handler;
 
     @Inject
     JavaPlugin plugin;
@@ -28,10 +28,11 @@ public class PluginNetworkService {
     PluginFactory factory;
 
     public PluginNetworkService() {
-        injector.injectMembers((this.handler = new PluginNetworkHandler()));
+        this.handler = new PluginNetworkHandler();
     }
 
     public void start() {
+        injector.injectMembers(handler);
         plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
         plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, "BungeeCord", handler);
     }
@@ -56,7 +57,7 @@ public class PluginNetworkService {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF(server);
-        out.writeUTF("rushland");
+        out.writeUTF(String.format("rushland:%s", plugin.getServer().getName()));
 
         ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
         DataOutputStream msgout = new DataOutputStream(msgbytes);
@@ -69,5 +70,6 @@ public class PluginNetworkService {
 
         out.writeShort(msgbytes.toByteArray().length);
         out.write(msgbytes.toByteArray());
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 }

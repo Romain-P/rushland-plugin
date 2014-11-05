@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import org.rushland.api.interfaces.bukkit.ImprovedListener;
 import org.rushland.plugin.entities.Client;
+import org.rushland.plugin.games.GameManager;
 import org.rushland.plugin.listeners.BoardGameListener;
 import org.rushland.plugin.listeners.ClientLogListener;
 import org.rushland.plugin.network.PluginNetworkService;
@@ -17,6 +18,7 @@ public class PluginModule extends AbstractModule{
         bind(PluginFactory.class).asEagerSingleton();
         bind(Client.class).asEagerSingleton();
         bind(PluginNetworkService.class).asEagerSingleton();
+        bind(GameManager.class).asEagerSingleton();
 
         Multibinder<ImprovedListener> listeners = Multibinder.newSetBinder(binder(), ImprovedListener.class);
         listeners.addBinding().to(ClientLogListener.class).asEagerSingleton();

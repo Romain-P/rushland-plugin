@@ -79,16 +79,18 @@ public class ClientManager extends DefaultDaoQueryManager<Client>{
     public Client load(Object primary) {
         try {
             Query query = createNewQuery(primary);
+            if(query == null || query.getData().isEmpty())
+                return null;
+
             return new Client(
                     (String) query.getData().get("uuid"),
-                    (String) query.getData().get("name"),
                     (long) query.getData().get("money"),
                     (int) query.getData().get("pvmDeaths"),
                     (int) query.getData().get("pvmWins"),
                     (int) query.getData().get("pvpDeaths"),
                     (int) query.getData().get("pvpWins"),
                     (int) query.getData().get("grade"),
-                    (int) query.getData().get("gradeTime"));
+                    (long) query.getData().get("gradeTime"));
         } catch (SQLException exception) {
             plugin.getLogger().warning(exception.getMessage());
             return null;

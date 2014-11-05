@@ -25,15 +25,25 @@ public class DefaultQuery implements Query {
 
     public Query setData(String column, Object data) throws NullPointerException {
         Class type = model.getColumns().get(column).getType();
+        Class datatype = data.getClass();
+
+        if(datatype == Integer.class)
+            datatype = int.class;
+        else if (datatype == Double.class)
+            datatype = double.class;
+        else if (datatype == Long.class)
+            datatype = long.class;
 
         if(type == null)
             throw new NullPointerException(String.format("QueryModel's column not found: %s", column));
-        else if(type !=  data.getClass())
-            throw new BadPutFieldTypeException(String.format("QueryModel %s needed type %s", column, type));
+        else if(type !=  datatype)
+            throw new BadPutFieldTypeException(String.format("QueryModel %s (%s) needed type %s", data.getClass(), column, type));
 
         this.data.put(column, data);
         return this;
     }
+
+
 
     public boolean checkFormation() {
         int size = model.getColumns().size() - data.size();
