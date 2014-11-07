@@ -5,7 +5,7 @@ package org.rushland.plugin.enums;
  */
 public enum GameType {
     RUSH,
-    DIVIDED_TOGETHER,
+    DEVIDED_TOGETHER,
     ANTWAR,
     TOWER,
 }

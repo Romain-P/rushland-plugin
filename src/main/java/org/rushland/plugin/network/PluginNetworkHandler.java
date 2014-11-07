@@ -8,9 +8,9 @@ import org.rushland.api.interfaces.database.DaoQueryManager;
 import org.rushland.api.interfaces.database.DatabaseService;
 import org.rushland.plugin.PluginFactory;
 import org.rushland.plugin.entities.Client;
-import org.rushland.plugin.enums.GameType;
 import org.rushland.plugin.enums.PluginType;
 import org.rushland.plugin.games.GameManager;
+import org.rushland.plugin.games.entities.GameTypeProperty;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -48,7 +48,7 @@ public class PluginNetworkHandler implements PluginMessageListener {
         String[] split = msg.split(":");
         switch(split[0].toLowerCase()) {
             case "disconnected": {
-                client = manager.load(player.getUniqueId());
+                client = manager.load(player.getUniqueId().toString());
                 gameManager.exit(client);
                 factory.getClients().remove(client.getUuid());
                 break;
@@ -59,10 +59,10 @@ public class PluginNetworkHandler implements PluginMessageListener {
                     gameManager.exit(client);
                 } else {
                     String name = split[1];
-                    GameType type = factory.getGameTypes().get(split[2]);
+                    GameTypeProperty property = factory.getGameTypeProperties().get(split[2]);
                     int maxClients = Integer.parseInt(split[3]);
 
-                    gameManager.joinGame(client, name, type, maxClients);
+                    gameManager.joinGame(client, name, property, maxClients);
                 }
                 break;
             }

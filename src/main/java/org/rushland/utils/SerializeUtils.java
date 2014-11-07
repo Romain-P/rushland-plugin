@@ -8,6 +8,7 @@ import java.io.*;
 /**
  * Managed by romain on 01/11/2014.
  */
+//Was used for plugin_messages
 public class SerializeUtils {
     @SneakyThrows
     public static String serialize(Serializable o) {

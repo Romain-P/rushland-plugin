@@ -1,4 +1,4 @@
-package org.rushland.plugin.games;
+package org.rushland.plugin.games.entities;
 
 import lombok.Getter;
 import org.bukkit.block.Sign;

@@ -14,10 +14,6 @@ configurations {
     provided
 }
 
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
-
 repositories {
     mavenCentral()
     maven { url "http://repo.bukkit.org/content/groups/public/" }

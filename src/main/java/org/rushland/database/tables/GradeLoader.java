@@ -31,7 +31,7 @@ public class GradeLoader extends DefaultDlaoQueryManager {
 
             for(Query query: queries) {
                 int id = (int) query.getData().get("id");
-                String prefix = TextUtils.parseColors((String) query.getData().get("prefix"));
+                String prefix = TextUtils.parseColors((String) query.getData().get("prefix"), true);
 
                 factory.getGrades().put(id, new Grade(id, prefix));
             }

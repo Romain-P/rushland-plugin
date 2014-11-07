@@ -1,7 +1,8 @@
 #Rushland configuration
 #Configure the number of games per Lobby
-lobby:
- slots: 50
+bungee:
+ config-path: ../bungee/config.yml
+ lobby-slots: 50
 
 #Configure your mysql database connection
 database:
@@ -10,23 +11,57 @@ database:
  user: root
  pass:
 
-#Configure differents names of lobby/pvp servers
-server-names:
- main: main
- pvp: pvp
- lobbies:
-  - lobby1
-  - lobby2
-  - lobby3
-  - lobby4
-  - lobby5
-  - lobby6
-  - lobby7
-
-#Configure name & colors of board titles (gametypes)
-#See also http://ess.khhq.net/mc/ for
-gametype-names:
- rush: [&4Rush&r]
- antwar: [&4AntWar&r]
- devided: [&4Devided-Together&r]
- tower: [&4The-Tower&r]
+#Configure name & maps location & spawn points
+gametypes:
+ rush:
+  name: [Rush]
+  map:
+   path: plugins/rushland/maps/rush.map
+   spawns:
+    - 600 5 41
+    - 600 4 12
+  wmap:
+   path: plugins/rushland/maps/wrush.map
+   spawns:
+    - 600 5 41
+    - 600 4 12
+ antwar:
+  name: [AntWar]
+  map:
+   path: plugins/rushland/maps/antwar.map
+   spawns:
+    - 600 5 41
+    - 600 4 12
+    - 600 5 11
+    - 600 4 10
+  wmap:
+   path: plugins/rushland/maps/wantwar.map
+   spawns:
+    - 600 5 41
+    - 600 4 12
+    - 600 5 11
+    - 600 5 10
+ devided:
+  name: [Devided-Together]
+  map:
+   path: plugins/rushland/maps/devided.map
+   spawns:
+    - 600 5 41
+    - 600 4 12
+  wmap:
+   path: plugins/rushland/maps/wdevided.map
+   spawns:
+    - 600 5 41
+    - 600 4 12
+ tower:
+  name: [Tower]
+  map:
+   path: plugins/rushland/maps/tower.map
+   spawns:
+    - 600 5 41
+    - 600 4 12
+  wmap:
+   path: plugins/rushland/maps/wtower.map
+   spawns:
+    - 600 5 41
+    - 600 4 12
