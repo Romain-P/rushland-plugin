@@ -2,13 +2,14 @@ package org.rushland.plugin.entities;
 
 import com.google.inject.Inject;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.rushland.api.interfaces.database.DaoQueryManager;
 import org.rushland.api.interfaces.database.model.annotations.PrimaryQueryField;
 import org.rushland.api.interfaces.database.model.annotations.QueryField;
 import org.rushland.database.PluginDatabaseService;
 import org.rushland.plugin.PluginFactory;
+import org.rushland.plugin.games.GameProfile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,6 @@ public class Client {
     @Getter
     @PrimaryQueryField
     private final String uuid;
-    @Getter
     @QueryField
     private String name;
     @Getter
@@ -39,11 +39,12 @@ public class Client {
     @Getter
     @QueryField
     private long gradeTime;
-    @Getter
     private Player player;
     @Getter
     private final List<String> cachedLobbies;
-    private final DaoQueryManager<Client> manager;
+    @Getter
+    @Setter
+    private GameProfile gameProfile;
 
     @Inject
     PluginDatabaseService database;
@@ -52,15 +53,20 @@ public class Client {
     @Inject
     PluginFactory factory;
 
-    public Client() {this(null);}
-
-    public Client(String uuid) {
-        this(uuid, null, 0, 0, 0, 0, 0, 0, 0);
+    public Client() {
+        this(null, "auto");
     }
 
-    public Client(String uuid, String name, long money, int pvmDeaths, int pvmWins, int pvpDeaths, int pvpWins, int grade, long gradeTime) {
+    public Client(String uuid, String name) {
+        this(uuid, 0, 0, 0, 0, 0, 0, 0);
+    }
+
+    public Client(String uuid) {
+        this(uuid, 0, 0, 0, 0, 0, 0, 0);
+    }
+
+    public Client(String uuid, long money, int pvmDeaths, int pvmWins, int pvpDeaths, int pvpWins, int grade, long gradeTime) {
         this.uuid = uuid;
-        this.name = name == null ? plugin.getServer().getPlayer(UUID.fromString(uuid)).getName() : name;
         this.money = money;
         this.pvmDeaths = pvmDeaths;
         this.pvmWins = pvmWins;
@@ -69,7 +75,6 @@ public class Client {
         this.grade = grade;
         this.gradeTime = gradeTime;
         this.cachedLobbies = new ArrayList<>();
-        this.manager = (DaoQueryManager<Client>) database.getQueryManagers().get(getClass());
     }
 
     public void addMoney(long money) {
@@ -97,15 +102,19 @@ public class Client {
     }
 
     public double getPvmRatio() {
-        return (pvmRatio = Math.floor((pvmWins/pvmDeaths) * 100)) / 100;
+        return (pvmRatio = Math.floor((pvmWins/(pvmDeaths==0?1:pvmDeaths)) * 100)) / 100;
     }
 
     public double getPvpRatio() {
-        return (pvpRatio = Math.floor((pvpWins/pvpDeaths) * 100)) / 100;
+        return (pvpRatio = Math.floor((pvpWins/(pvpDeaths==0?1:pvpDeaths)) * 100)) / 100;
     }
 
     public Player getPlayer() {
         return player != null ? player : (player = plugin.getServer().getPlayer(UUID.fromString(uuid)));
+    }
+
+    public String getName() {
+        return getPlayer().getName();
     }
 
     public void subscribe(int grade, long gradeTime, TimeUnit unity) {
@@ -138,15 +147,15 @@ public class Client {
     }
 
     public void save() {
-        manager.update(this);
+        factory.getClientManager().update(this);
     }
 
     public Client create() {
-        manager.create(this);
+        factory.getClientManager().create(this);
         return this;
     }
 
     public void remove() {
-        manager.delete(this);
+        factory.getClientManager().delete(this);
     }
 }

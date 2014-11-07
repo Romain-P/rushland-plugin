@@ -1,7 +1,6 @@
 package org.rushland.core;
 
 import com.google.inject.AbstractModule;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -16,6 +15,6 @@ public class CoreModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(Plugin.class).toInstance(plugin);
+        bind(JavaPlugin.class).toInstance(plugin);
     }
 }

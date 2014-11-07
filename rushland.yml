@@ -1,4 +1,7 @@
 #Rushland configuration
+#Configure the number of games per Lobby
+lobby:
+ slots: 50
 
 #Configure your mysql database connection
 database:
