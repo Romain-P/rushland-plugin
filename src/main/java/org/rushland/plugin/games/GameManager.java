@@ -3,11 +3,14 @@ package org.rushland.plugin.games;
 import com.google.inject.Inject;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.api.interfaces.games.GameMod;
 import org.rushland.plugin.PluginFactory;
 import org.rushland.plugin.entities.Client;
 import org.rushland.plugin.enums.BoardLines;
 import org.rushland.plugin.enums.GameType;
+import org.rushland.plugin.games.entities.GameSign;
+import org.rushland.plugin.games.entities.GameTypeProperty;
 import org.rushland.plugin.network.PluginNetworkService;
 
 import java.util.HashMap;
@@ -29,6 +32,8 @@ public class GameManager {
 
     @Inject
     PluginNetworkService network;
+    @Inject
+    JavaPlugin plugin;
     PluginFactory factory;
 
     @Inject
@@ -47,6 +52,8 @@ public class GameManager {
     public void askJoin(Client client, Sign sign) {
         locker.lock();
         try {
+            if(clients.get(client.getUuid()) != null) return;
+
             GameSign game = games.get(sign.getLine(BoardLines.NAME.get()));
             if (game == null)
                 games.put(sign.getLine(BoardLines.NAME.get()), (game = new GameSign(sign, availableLobby())));
@@ -110,10 +117,10 @@ public class GameManager {
         sign.update();
     }
 
-    public void joinGame(Client client, String name, GameType type, int maxPlayers) {
+    public void joinGame(Client client, String name, GameTypeProperty property, int maxPlayers) {
         GameMod gamemod = gamemods.get(name);
         if(gamemod == null)
-            gamemods.put(name, (gamemod = new DefaultGameMod(name, type, type == GameType.ANTWAR ? 4 : 2, maxPlayers/2)));
+            gamemods.put(name, (gamemod = new DefaultGameMod(name, property, property.getType() == GameType.ANTWAR ? 4 : 2, maxPlayers/2, plugin)));
         gamemod.addClient(client);
     }
 }

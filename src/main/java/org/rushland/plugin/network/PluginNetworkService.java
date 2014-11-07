@@ -7,8 +7,6 @@ import com.google.inject.Injector;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.rushland.plugin.PluginFactory;
-import org.rushland.plugin.enums.PluginType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -24,8 +22,6 @@ public class PluginNetworkService {
     JavaPlugin plugin;
     @Inject
     Injector injector;
-    @Inject
-    PluginFactory factory;
 
     public PluginNetworkService() {
         this.handler = new PluginNetworkHandler();
@@ -48,9 +44,6 @@ public class PluginNetworkService {
         out.writeUTF(server);
 
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-
-        if(factory.getType() == PluginType.MAIN)
-            factory.getClients().get(player.getUniqueId().toString()).addNewCachedLobby(server);
     }
 
     public void sendMessage(Player player, String server, String msg) {

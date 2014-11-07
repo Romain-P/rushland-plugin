@@ -3,16 +3,16 @@ package org.rushland.plugin.entities;
 import com.google.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.api.interfaces.database.model.annotations.PrimaryQueryField;
 import org.rushland.api.interfaces.database.model.annotations.QueryField;
 import org.rushland.database.PluginDatabaseService;
 import org.rushland.plugin.PluginFactory;
-import org.rushland.plugin.games.GameProfile;
+import org.rushland.plugin.games.entities.GameProfile;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -40,8 +40,6 @@ public class Client {
     @QueryField
     private long gradeTime;
     private Player player;
-    @Getter
-    private final List<String> cachedLobbies;
     @Getter
     @Setter
     private GameProfile gameProfile;
@@ -74,7 +72,6 @@ public class Client {
         this.pvpWins = pvpWins;
         this.grade = grade;
         this.gradeTime = gradeTime;
-        this.cachedLobbies = new ArrayList<>();
     }
 
     public void addMoney(long money) {
@@ -141,9 +138,16 @@ public class Client {
         return subscribed;
     }
 
-    public void addNewCachedLobby(String name) {
-        if(!cachedLobbies.contains(name))
-            cachedLobbies.add(name);
+    public void reset() {
+        player.setBedSpawnLocation(null);
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(new ItemStack[4]);
+        player.setLevel(0);
+        player.setFireTicks(0);
+        player.setHealth(20.0);
+        player.setFoodLevel(20);
+        player.setFallDistance(0);
+        player.setGameMode(GameMode.SURVIVAL);
     }
 
     public void save() {
