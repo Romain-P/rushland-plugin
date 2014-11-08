@@ -12,6 +12,7 @@ import org.rushland.api.interfaces.database.model.annotations.QueryField;
 import org.rushland.database.PluginDatabaseService;
 import org.rushland.plugin.PluginFactory;
 import org.rushland.plugin.games.entities.GameProfile;
+import org.rushland.plugin.network.PluginNetworkService;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,8 @@ public class Client {
     JavaPlugin plugin;
     @Inject
     PluginFactory factory;
+    @Inject
+    PluginNetworkService network;
 
     public Client() {
         this(null, "auto");
@@ -148,6 +151,10 @@ public class Client {
         player.setFoodLevel(20);
         player.setFallDistance(0);
         player.setGameMode(GameMode.SURVIVAL);
+    }
+
+    public void returnToMain() {
+        network.dispatchTo(player, factory.getMainName());
     }
 
     public void save() {
