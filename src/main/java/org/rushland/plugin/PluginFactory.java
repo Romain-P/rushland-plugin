@@ -61,8 +61,8 @@ public class PluginFactory {
         this.slots = mainConfig.getInt("bungee.lobby-slots");
 
         List<String> list = new ArrayList<>();
-        //TODO: test
-        for(String name: bungeeConfig.getRoot().getConfigurationSection("servers").getKeys(false))
+
+        for(String name: bungeeConfig.getConfigurationSection("servers").getKeys(false))
             if(!name.equalsIgnoreCase("main") && !name.equalsIgnoreCase("pvp")) {
                 list.add(name);
                 System.out.println(String.format("ADDED %s", name));
@@ -71,7 +71,7 @@ public class PluginFactory {
         this.pvpName = "pvp";
         this.mainName = "main";
 
-        for(String type: mainConfig.getStringList("gametypes")) {
+        for(String type: mainConfig.getConfigurationSection("gametypes").getKeys(false)) {
             String board = mainConfig.getString(String.format("gametypes.%s.name", type));
             this.gameTypeProperties.put(board, new GameTypeProperty(board,
                     mainConfig.getString(String.format("gametypes.%s.map.path", type)),
