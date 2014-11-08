@@ -1,6 +1,7 @@
 package org.rushland.plugin.games;
 
 import com.google.inject.Inject;
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,6 +27,7 @@ public class GameManager {
     private final Map<String, GameSign> games, clients;
     private final Map<String, Integer> lobbies;
     /** Type Lobby **/
+    @Getter
     private final Map<String, GameMod> gamemods;
 
     private final ReentrantLock locker;
@@ -119,8 +121,17 @@ public class GameManager {
 
     public void joinGame(Client client, String name, GameTypeProperty property, int maxPlayers) {
         GameMod gamemod = gamemods.get(name);
+
         if(gamemod == null)
-            gamemods.put(name, (gamemod = new DefaultGameMod(name, property, property.getType() == GameType.ANTWAR ? 4 : 2, maxPlayers/2, plugin)));
+            gamemods.put(name, (gamemod = new DefaultGameMod(
+                    name,
+                    property,
+                    property.getType() == GameType.ANTWAR ? 4 : 2,
+                    maxPlayers/2,
+                    plugin,
+                    this
+            ).activeTimeOut()));
+
         gamemod.addClient(client);
     }
 }
