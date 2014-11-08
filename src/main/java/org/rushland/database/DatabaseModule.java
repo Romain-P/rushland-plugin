@@ -7,6 +7,7 @@ import org.rushland.api.interfaces.database.DatabaseService;
 import org.rushland.api.interfaces.database.DlaoQueryManager;
 import org.rushland.database.tables.ClientManager;
 import org.rushland.database.tables.GradeLoader;
+import org.rushland.database.tables.ItemLoader;
 
 /**
  * Managed by romain on 29/10/2014.
@@ -21,5 +22,6 @@ public class DatabaseModule extends AbstractModule{
 
         Multibinder<DlaoQueryManager> loaders = Multibinder.newSetBinder(binder(), DlaoQueryManager.class);
         loaders.addBinding().to(GradeLoader.class).asEagerSingleton();
+        loaders.addBinding().to(ItemLoader.class).asEagerSingleton();
     }
 }

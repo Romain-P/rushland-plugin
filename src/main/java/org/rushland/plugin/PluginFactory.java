@@ -11,6 +11,9 @@ import org.rushland.database.tables.ClientManager;
 import org.rushland.database.tables.GradeLoader;
 import org.rushland.plugin.entities.Client;
 import org.rushland.plugin.entities.Grade;
+import org.rushland.plugin.entities.Item;
+import org.rushland.plugin.entities.ItemBag;
+import org.rushland.plugin.enums.GameType;
 import org.rushland.plugin.enums.PluginType;
 import org.rushland.plugin.games.entities.GameTypeProperty;
 
@@ -31,6 +34,9 @@ public class PluginFactory {
     private final String pvpName, mainName;
     private final Map<String, Client> clients;
     private final Map<Integer, Grade> grades;
+    private final Map<Integer, Item> items;
+    private final Map<Integer, ItemBag> itemBags;
+    private final Map<String, GameType> gameTypes;
     private final Map<String, GameTypeProperty> gameTypeProperties;
     private final YamlConfiguration mainConfig, bungeeConfig;
     private DaoQueryManager<Client> clientManager;
@@ -44,6 +50,9 @@ public class PluginFactory {
         this.clients = new HashMap<>();
         this.grades = new HashMap<>();
         this.gameTypeProperties = new HashMap<>();
+        this.items    = new HashMap<>();
+        this.itemBags = new HashMap<>();
+        this.gameTypes = new HashMap<>();
 
         this.type = PluginType.get(plugin.getConfig().getString("plugin.type"));
         this.mainConfig = YamlConfiguration.loadConfiguration(new File(plugin.getConfig().getString("config.path")));

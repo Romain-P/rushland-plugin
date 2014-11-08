@@ -19,11 +19,18 @@ public class DefaultQueryModel<T> implements QueryModel<T> {
     private final String tableName;
     @Getter
     private String primaryKeyName;
-    private final T schema;
-    @Getter
+    private final Class<?> schema;
     private final Map<String, QueryColumn> columns;
 
+    /**
+     * @deprecated useless allocation
+     */
+    @Deprecated
     public DefaultQueryModel(String tableName, T schema) {
+        this(tableName, schema.getClass());
+    }
+
+    public DefaultQueryModel(String tableName, Class<?> schema) {
         this.tableName = tableName;
         this.schema = schema;
         this.columns = new HashMap<>();
@@ -33,10 +40,15 @@ public class DefaultQueryModel<T> implements QueryModel<T> {
         return new HashMap<>();
     }
 
+    @Override
+    public Map<String, QueryColumn> getColumns() {
+        return columns;
+    }
+
     public QueryModel<T> schematize() {
         boolean defaultModel = getColumnModel().isEmpty();
 
-        for(Field field: schema.getClass().getDeclaredFields()) {
+        for(Field field: schema.getDeclaredFields()) {
             boolean primary = false;
 
             if(field.isAnnotationPresent(PrimaryQueryField.class)) {
@@ -57,7 +69,6 @@ public class DefaultQueryModel<T> implements QueryModel<T> {
     }
 
     public Query createNewQuery() {
-        Query query = new DefaultQuery(this);
-        return query;
+        return new DefaultQuery(this);
     }
 }
