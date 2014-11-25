@@ -7,9 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.rushland.api.interfaces.bukkit.ImprovedListener;
+import org.rushland.api.interfaces.games.GameMod;
 import org.rushland.plugin.PluginFactory;
 import org.rushland.plugin.entities.Client;
-import org.rushland.plugin.enums.PluginType;
+import org.rushland.plugin.enums.BoardState;
 import org.rushland.plugin.network.PluginNetworkService;
 
 import java.util.Set;
@@ -30,7 +31,7 @@ public class ClientLogListener extends ImprovedListener {
     @EventHandler
     public void onConnect(PlayerJoinEvent event) {
         Player player = get(event);
-        System.out.println(player.getUniqueId().toString());
+        System.out.println(event.getPlayer().getName() + ": : :"+player.getUniqueId().toString());
         Client client = factory.getClientManager().load(player.getUniqueId().toString());
 
         boolean inject;
@@ -40,6 +41,8 @@ public class ClientLogListener extends ImprovedListener {
 
         injector.injectMembers(client);
         if(inject) client.create();
+
+
 
         factory.getClients().put(client.getUuid(), client);
     }
@@ -52,10 +55,12 @@ public class ClientLogListener extends ImprovedListener {
         for(ImprovedListener listener: listeners)
             listener.pullPlayer(player);
 
-        if(factory.getType() != PluginType.MAIN)
-            network.sendMessage(player, factory.getMainName(), "disconnected");
-
-        if(client.getGameProfile() != null) client.getGameProfile().getGame().delClient(client);
+        if(client.getGameProfile() != null) {
+            GameMod game = client.getGameProfile().getGame();
+            boolean started = game.getState() == BoardState.FULL;
+            network.sendMessage(player, factory.getMainName(), "disconnected" + (started ? "" : ":available"), true);
+            game.delClient(client);
+        }
 
         client.save();
         factory.getClients().remove(client.getUuid());

@@ -1,71 +1,61 @@
 package org.rushland.plugin.network;
 
 import com.google.inject.Inject;
-import lombok.SneakyThrows;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.rushland.api.interfaces.database.DaoQueryManager;
-import org.rushland.api.interfaces.database.DatabaseService;
-import org.rushland.plugin.PluginFactory;
-import org.rushland.plugin.entities.Client;
-import org.rushland.plugin.enums.PluginType;
-import org.rushland.plugin.games.GameManager;
-import org.rushland.plugin.games.entities.GameTypeProperty;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
+import org.apache.mina.core.service.IoHandler;
+import org.apache.mina.core.session.IdleStatus;
+import org.apache.mina.core.session.IoSession;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Managed by romain on 31/10/2014.
  */
-public class PluginNetworkHandler implements PluginMessageListener {
+public class PluginNetworkHandler implements IoHandler {
     @Inject
-    PluginFactory factory;
+    JavaPlugin plugin;
     @Inject
     PluginNetworkService network;
-    @Inject
-    GameManager gameManager;
-    @Inject
-    DatabaseService database;
 
-    @SneakyThrows
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] bytes) {
-        DataInput in = new DataInputStream(new ByteArrayInputStream(bytes));
-
-        String subChannel = in.readUTF();
-        String[] split = subChannel.split(":");
-        if(!split[0].equalsIgnoreCase("rushland")) return;
-
-        parse(player, split[1], new DataInputStream(new ByteArrayInputStream(new byte[in.readShort()])).readUTF());
+    public void sessionCreated(IoSession session) throws Exception {
+        network.setNetwork(session);
+        plugin.getLogger().info("(Network) adding new server <=> "+session.getId());
     }
 
-    private void parse(Player player, String from, String msg) {
-        Client client = factory.getClients().get(player.getUniqueId().toString());
-        DaoQueryManager<Client> manager = factory.getClientManager();
+    @Override
+    public void sessionOpened(IoSession session) throws Exception {
+        plugin.getLogger().info("(Network) opened server's session "+session.getId());
+    }
 
-        String[] split = msg.split(":");
-        switch(split[0].toLowerCase()) {
-            case "disconnected": {
-                client = manager.load(player.getUniqueId().toString());
-                gameManager.exit(client);
-                factory.getClients().remove(client.getUuid());
-                break;
-            }
+    @Override
+    public void sessionClosed(IoSession session) throws Exception {
+        plugin.getLogger().info("(Network) closed server's session " + session.getId());
+    }
 
-            case "game": {
-                if(factory.getType() == PluginType.MAIN) {
-                    gameManager.exit(client);
-                } else {
-                    String name = split[1];
-                    GameTypeProperty property = factory.getGameTypeProperties().get(split[2]);
-                    int maxClients = Integer.parseInt(split[3]);
+    @Override
+    public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
+        session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, 60 * 15 * 1000);
+    }
 
-                    gameManager.joinGame(client, name, property, maxClients);
-                }
-                break;
-            }
+    @Override
+    public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
+        plugin.getLogger().warning("(Network) Error to session " + session.getId() + " : " + cause.getMessage());
+    }
+
+    @Override
+    public void messageReceived(IoSession session, Object message) throws Exception {
+        String packet = (String) message;
+
+        String[] toParse = packet.split("\n");
+
+        for(int i=toParse.length ; i > 0 ; i--) {
+            String msg = toParse[toParse.length - i];
+            network.parse(msg);
+            plugin.getLogger().info("(network) <- "+msg);
         }
+    }
+
+    @Override
+    public void messageSent(IoSession session, Object message) throws Exception {
+        plugin.getLogger().info("(network) -> " + message.toString());
     }
 }

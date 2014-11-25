@@ -9,6 +9,7 @@ import org.rushland.api.interfaces.games.GameMod;
 import org.rushland.plugin.PluginFactory;
 import org.rushland.plugin.entities.Client;
 import org.rushland.plugin.enums.BoardLines;
+import org.rushland.plugin.enums.BoardState;
 import org.rushland.plugin.enums.GameType;
 import org.rushland.plugin.games.entities.GameSign;
 import org.rushland.plugin.games.entities.GameTypeProperty;
@@ -60,7 +61,7 @@ public class GameManager {
             if (game == null)
                 games.put(sign.getLine(BoardLines.NAME.get()), (game = new GameSign(sign, availableLobby())));
 
-            if (sign.getLine(BoardLines.STATE.get()).equals("Complet")) {
+            if (sign.getLine(BoardLines.STATE.get()).equals(BoardState.FULL.get())) {
                 client.getPlayer().sendMessage(String.format("%sAction impossible:%s la partie est complète!", ChatColor.RED, ChatColor.RESET));
                 return;
             }
@@ -80,14 +81,14 @@ public class GameManager {
         }
     }
 
-    public void exit(Client client) {
+    public void exit(String uuid, boolean open) {
         locker.lock();
         try {
-            GameSign game = clients.remove(client.getUuid());
-            game.getClients().remove(client.getUuid());
+            GameSign game = clients.remove(uuid);
+            game.getClients().remove(uuid);
 
-            if (game.getSign().getLine(BoardLines.STATE.get()).equals("Disponible") || game.getClients().size() == 0) {
-                if (game.getSign().getLine(BoardLines.STATE.get()).equals("Complet"))
+            if (game.getSign().getLine(BoardLines.STATE.get()).equals(BoardState.AVAILABLE.get()) || game.getClients().size() == 0 || open) {
+                if (game.getSign().getLine(BoardLines.STATE.get()).equals(BoardState.FULL.get()) && !open)
                     lobbies.put(game.getLobby(), lobbies.get(game.getLobby()) - 1);
                 updateBoardPlayers(game);
                 updateBoardState(game);
@@ -113,7 +114,7 @@ public class GameManager {
     }
 
     private void updateBoardState(GameSign game) {
-        String text = game.getClients().size() == game.getMaxClients() ? "Complet" : "Disponible";
+        String text = game.getClients().size() == game.getMaxClients() ? BoardState.FULL.get() : BoardState.AVAILABLE.get();
         Sign sign = game.getSign();
         sign.setLine(BoardLines.STATE.get(), text);
         sign.update();

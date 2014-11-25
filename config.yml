@@ -1,8 +1,9 @@
 #Plugin configuration
 
-#Rushland configuration path
+#Rushland configuration path & port
 config:
  path: ../rushland.yml
+ port: 58800
 
 #Configure your slots & type (types = main|lobby|pvp)
 plugin:

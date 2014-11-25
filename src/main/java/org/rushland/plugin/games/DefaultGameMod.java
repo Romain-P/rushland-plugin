@@ -8,20 +8,25 @@ import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.api.interfaces.games.GameMod;
 import org.rushland.plugin.entities.Client;
+import org.rushland.plugin.enums.BoardState;
 import org.rushland.plugin.enums.GameType;
 import org.rushland.plugin.games.entities.GameProfile;
 import org.rushland.plugin.games.entities.GameTeam;
 import org.rushland.plugin.games.entities.GameTypeProperty;
 import org.rushland.utils.FileUtils;
+import org.rushland.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Managed by romain on 01/11/2014.
  */
 public class DefaultGameMod implements GameMod {
+    private final ReadWriteLock locker;
     private final JavaPlugin plugin;
     private final GameManager manager;
     @Getter
@@ -39,11 +44,15 @@ public class DefaultGameMod implements GameMod {
     private World world;
     private String mapInstance;
 
-    //time check
+    //time
     private long lastActivity;
     private int taskId;
+    private BoardState state;
+    private int timingTask, timingCount;
+    private boolean taskBroken;
 
     public DefaultGameMod(String name, GameTypeProperty property, int nbrTeam, int nbrPerTeam, JavaPlugin plugin, GameManager manager) {
+        this.locker = new ReentrantReadWriteLock();
         this.plugin = plugin;
         this.manager = manager;
         this.teams = Collections.synchronizedList(new ArrayList<GameTeam>(nbrTeam));
@@ -74,7 +83,7 @@ public class DefaultGameMod implements GameMod {
                 manager.getGamemods().remove(name);
                 plugin.getServer().getScheduler().cancelTask((taskId));
             }
-        }, 10*60*1000, 10*60*1000);
+        }, TimeUtils.convertSecondsToTicks(10*60), TimeUtils.convertSecondsToTicks(10*60));
         return this;
     }
 
@@ -96,7 +105,7 @@ public class DefaultGameMod implements GameMod {
                 public void run() {
                     removeWorld();
                 }
-            }, 200);
+            }, TimeUtils.convertSecondsToTicks(1));
         }
     }
 
@@ -119,35 +128,85 @@ public class DefaultGameMod implements GameMod {
     }
 
     public void delClient(Client client) {
-        tick();
-        GameTeam team = client.getGameProfile().getTeam();
-        team.getClients().remove(client);
+        locker.writeLock().lock();
+        try {
+            if (state == BoardState.STARTING) {
+                plugin.getServer().getScheduler().cancelTask((timingTask));
+                state = BoardState.AVAILABLE;
+            }
 
-        GameTeam winners = null;
+            tick();
+            GameTeam team = client.getGameProfile().getTeam();
+            team.getClients().remove(client);
+            client.setGameProfile(null);
 
-        for(GameTeam may: teams) {
-            if(!may.getClients().isEmpty()) {
-                if (winners == null)
-                    winners = may;
-                else {
-                    winners = null;
-                    break;
+            GameTeam winners = null;
+
+            if (state != BoardState.FULL) return;
+
+            for (GameTeam may : teams) {
+                if (!may.getClients().isEmpty()) {
+                    if (winners == null)
+                        winners = may;
+                    else {
+                        winners = null;
+                        break;
+                    }
                 }
             }
-        }
-        if(winners != null) giveRewards(winners);
 
-        client.setGameProfile(null);
+            if (winners != null) {
+                giveRewards(winners);
+                state = BoardState.AVAILABLE;
+            }
+        } finally {
+            locker.readLock().unlock();
+        }
     }
 
-    private void check() {
+    private boolean check() {
         boolean full = true;
 
         for(GameTeam team: teams)
             if(team.getClients().size() < nbrPerTeam)
                 full = false;
 
-        if(full) start();
+        if(full) {
+            locker.writeLock().lock();
+            try {
+                state = BoardState.STARTING;
+            } finally  {
+                locker.writeLock().unlock();
+            }
+
+            timingCount = 10;
+            timingTask = schedule(1, new Runnable() {
+                public void run() {
+                    locker.readLock().lock();
+                    try {
+                        if(state == BoardState.AVAILABLE) {
+                            sendMapMessage("Partie annulée: en attente de joueurs..");
+                            timingTask = 0;
+                            return;
+                        }
+                    } finally {
+                        locker.readLock().unlock();
+                    }
+
+                    if(timingCount == 1) {
+                        start();
+                        return;
+                    } else {
+                        timingCount--;
+                        schedule(1, this);
+                    }
+
+                    sendMapMessage("Début dans "+timingCount+" secondes..");
+                }
+            });
+        }
+
+        return full;
     }
 
     private void start() {
@@ -163,12 +222,41 @@ public class DefaultGameMod implements GameMod {
                 client.getPlayer().sendMessage(String.format("%sLe jeu commence, bonne chance à tous!", Color.RED));
             }
         }
+
+        timingTask = 0;
+        locker.writeLock().lock();
+        try {
+            state = BoardState.FULL;
+        } finally {
+            locker.writeLock().unlock();
+        }
     }
 
     private void giveRewards(GameTeam team) {
         for(Client client: team.getClients()) {
+            team.getClients().remove(client);
+            client.setGameProfile(null);
             client.getPlayer().sendMessage(String.format("%sFélicitations, vous avez gagné!", Color.RED));
             client.returnToMain();
         }
+    }
+
+    private int schedule(int seconds, Runnable runnable) {
+        return plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, runnable, TimeUtils.convertSecondsToTicks(seconds));
+    }
+
+    public BoardState getState() {
+        locker.readLock().lock();
+        try {
+            return this.state;
+        } finally {
+            locker.readLock().unlock();
+        }
+    }
+
+    private void sendMapMessage(String message) {
+        for(GameTeam team: teams)
+            for(Client client: team.getClients())
+                client.getPlayer().sendMessage(message);
     }
 }

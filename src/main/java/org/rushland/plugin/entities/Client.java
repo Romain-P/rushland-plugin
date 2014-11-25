@@ -142,19 +142,20 @@ public class Client {
     }
 
     public void reset() {
-        player.setBedSpawnLocation(null);
-        player.getInventory().clear();
-        player.getInventory().setArmorContents(new ItemStack[4]);
-        player.setLevel(0);
-        player.setFireTicks(0);
-        player.setHealth(20.0);
-        player.setFoodLevel(20);
-        player.setFallDistance(0);
-        player.setGameMode(GameMode.SURVIVAL);
+        getPlayer().setBedSpawnLocation(null);
+        getPlayer().getInventory().clear();
+        getPlayer().getInventory().setArmorContents(new ItemStack[4]);
+        getPlayer().setLevel(0);
+        getPlayer().setFireTicks(0);
+        getPlayer().setHealth(20.0);
+        getPlayer().setFoodLevel(20);
+        getPlayer().setFallDistance(0);
+        getPlayer().setGameMode(GameMode.SURVIVAL);
     }
 
     public void returnToMain() {
         network.dispatchTo(player, factory.getMainName());
+        network.sendMessage(player, factory.getMainName(), "game", false);
     }
 
     public void save() {

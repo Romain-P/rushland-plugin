@@ -28,6 +28,7 @@ import java.util.Map;
  */
 @Getter
 public class PluginFactory {
+    private final int port;
     private final PluginType type;
     private final long slots;
     private final String[] lobbyNames;
@@ -54,6 +55,7 @@ public class PluginFactory {
         this.itemBags = new HashMap<>();
         this.gameTypes = new HashMap<>();
 
+        this.port = plugin.getConfig().getInt("plugin.port");
         this.type = PluginType.get(plugin.getConfig().getString("plugin.type"));
         this.mainConfig = YamlConfiguration.loadConfiguration(new File(plugin.getConfig().getString("config.path")));
         this.bungeeConfig = YamlConfiguration.loadConfiguration(new File(mainConfig.getString("bungee.config-path")));
@@ -63,10 +65,9 @@ public class PluginFactory {
         List<String> list = new ArrayList<>();
 
         for(String name: bungeeConfig.getConfigurationSection("servers").getKeys(false))
-            if(!name.equalsIgnoreCase("main") && !name.equalsIgnoreCase("pvp")) {
+            if(!name.equalsIgnoreCase("main") && !name.equalsIgnoreCase("pvp"))
                 list.add(name);
-                System.out.println(String.format("ADDED %s", name));
-            }
+
         this.lobbyNames = list.toArray(new String[1]);
         this.pvpName = "pvp";
         this.mainName = "main";
