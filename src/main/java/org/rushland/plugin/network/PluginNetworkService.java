@@ -7,10 +7,11 @@ import com.google.inject.Injector;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.textline.LineDelimiter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,13 +42,14 @@ public class PluginNetworkService extends NetworkConnector {
     @Getter
     @Setter
     private IoSession network;
+    private ConnectFuture future;
 
     @Override
     protected void configure() {
-        connector.getFilterChain().addLast("game-codec-filter",
+        plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
+        connector.getFilterChain().addLast("filter",
                 new ProtocolCodecFilter(
-                        new TextLineCodecFactory(Charset.forName("UTF8"), LineDelimiter.NUL,
-                                new LineDelimiter("\n\0"))));
+                        new TextLineCodecFactory(Charset.forName("UTF8"))));
         IoHandler handler = new PluginNetworkHandler();
         injector.injectMembers(handler);
 
@@ -56,8 +58,23 @@ public class PluginNetworkService extends NetworkConnector {
 
     public void start() {
         configure();
-        network = connector.connect(new InetSocketAddress("127.0.0.1", 550)).getSession();
-        network.write(factory.getName()+"!");
+        future = connector.connect(new InetSocketAddress("localhost", 550));
+        future.awaitUninterruptibly();
+
+        future.addListener(new IoFutureListener<ConnectFuture>() {
+            public void operationComplete(ConnectFuture future) {
+                if (future.isConnected()) {
+                    network = future.getSession();
+                    network.write(factory.getName()+"!");
+                } else plugin.getLogger().warning("Error when trying to get future connection (network)");
+            }
+        });
+    }
+
+    @Override
+    public void stop() {
+        plugin.getServer().getMessenger().unregisterOutgoingPluginChannel(plugin, "BungeeCord");
+        super.stop();
     }
 
     public void dispatchTo(Player player, String server) {
@@ -70,8 +87,8 @@ public class PluginNetworkService extends NetworkConnector {
 
     @SneakyThrows
     public void sendMessage(Player player, String server, String msg) {
-        String packet = server+":"+player.getName()+":"+msg;
-        network.write(packet);
+        String packet = server+":"+player.getUniqueId().toString()+":"+msg;
+        network.write(packet+"|");
     }
 
     public void parse(final String msg) {

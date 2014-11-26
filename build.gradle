@@ -24,12 +24,11 @@ repositories {
 dependencies {
     provided "org.projectlombok:lombok:$lombok"
     provided "org.bukkit:bukkit:$bukkit"
+    compile "org.apache.mina:mina-core:$mina"
     compile "com.google.inject:guice:$guice"
     compile "com.google.inject.extensions:guice-multibindings:$guicem"
     compile "mysql:mysql-connector-java:$mysql"
     compile "commons-io:commons-io:$apache"
-    compile "org.apache.mina:mina-core:$mina"
-
     testCompile "junit:junit:$junit"
 }
 

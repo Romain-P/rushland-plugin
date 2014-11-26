@@ -10,4 +10,5 @@ public interface GameMod {
     void addClient(Client client);
     void delClient(Client client);
     BoardState getState();
+    void onEnd();
 }

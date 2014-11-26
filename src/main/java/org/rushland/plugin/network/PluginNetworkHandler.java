@@ -45,7 +45,7 @@ public class PluginNetworkHandler implements IoHandler {
     public void messageReceived(IoSession session, Object message) throws Exception {
         String packet = (String) message;
 
-        String[] toParse = packet.split("\n");
+        String[] toParse = packet.split("\\|");
 
         for(int i=toParse.length ; i > 0 ; i--) {
             String msg = toParse[toParse.length - i];

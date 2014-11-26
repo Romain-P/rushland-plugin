@@ -49,7 +49,6 @@ public class DefaultGameMod implements GameMod {
     private int taskId;
     private BoardState state;
     private int timingTask, timingCount;
-    private boolean taskBroken;
 
     public DefaultGameMod(String name, GameTypeProperty property, int nbrTeam, int nbrPerTeam, JavaPlugin plugin, GameManager manager) {
         this.locker = new ReentrantReadWriteLock();
@@ -141,6 +140,7 @@ public class DefaultGameMod implements GameMod {
             client.setGameProfile(null);
 
             GameTeam winners = null;
+            client.getPlayer().teleport(waitWorld.getSpawnLocation());
 
             if (state != BoardState.FULL) return;
 
@@ -157,10 +157,10 @@ public class DefaultGameMod implements GameMod {
 
             if (winners != null) {
                 giveRewards(winners);
-                state = BoardState.AVAILABLE;
+                onEnd();
             }
         } finally {
-            locker.readLock().unlock();
+            locker.writeLock().unlock();
         }
     }
 
@@ -219,7 +219,8 @@ public class DefaultGameMod implements GameMod {
             for (Client client : team.getClients()) {
                 client.reset();
                 client.getPlayer().teleport(gameLocation);
-                client.getPlayer().sendMessage(String.format("%sLe jeu commence, bonne chance à tous!", Color.RED));
+                client.getPlayer().setBedSpawnLocation(gameLocation);
+                client.getPlayer().sendMessage(Color.RED+"Le jeu commence, bonne chance à tous!");
             }
         }
 
@@ -232,11 +233,18 @@ public class DefaultGameMod implements GameMod {
         }
     }
 
+    @Override
+    public void onEnd() {
+        state = BoardState.AVAILABLE;
+        removeWorld();
+    }
+
     private void giveRewards(GameTeam team) {
-        for(Client client: team.getClients()) {
+        List<Client> mirror = team.getClients(); //concurrent exception fixed
+        for(Client client: mirror) {
             team.getClients().remove(client);
             client.setGameProfile(null);
-            client.getPlayer().sendMessage(String.format("%sFélicitations, vous avez gagné!", Color.RED));
+            client.getPlayer().sendMessage(Color.RED+"Félicitations, vous avez gagné!");
             client.returnToMain();
         }
     }
