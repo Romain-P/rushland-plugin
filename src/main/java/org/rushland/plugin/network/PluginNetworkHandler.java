@@ -33,7 +33,7 @@ public class PluginNetworkHandler implements IoHandler {
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, 60 * 15 * 1000);
+
     }
 
     @Override

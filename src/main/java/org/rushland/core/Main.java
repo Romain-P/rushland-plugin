@@ -51,10 +51,10 @@ public class Main extends JavaPlugin {
         for(Listener listener: listeners)
             getServer().getPluginManager().registerEvents(listener, this);
 
-        getLogger().info("enabling network..");
+        getLogger().info("enabling communication's network..");
 
         try {
-            network.start("127.0.0.1", factory.getPort());
+            network.start();
         } catch(Exception e) {
             getLogger().warning(String.format("error when trying to start the network: %s", e.getMessage()));
         }

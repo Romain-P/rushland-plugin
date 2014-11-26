@@ -58,7 +58,7 @@ public class ClientLogListener extends ImprovedListener {
         if(client.getGameProfile() != null) {
             GameMod game = client.getGameProfile().getGame();
             boolean started = game.getState() == BoardState.FULL;
-            network.sendMessage(player, factory.getMainName(), "disconnected" + (started ? "" : ":available"), true);
+            network.sendMessage(player, factory.getMainName(), "disconnected" + (started ? "" : ":available"));
             game.delClient(client);
         }
 

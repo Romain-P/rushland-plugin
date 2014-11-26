@@ -155,7 +155,7 @@ public class Client {
 
     public void returnToMain() {
         network.dispatchTo(player, factory.getMainName());
-        network.sendMessage(player, factory.getMainName(), "game", false);
+        network.sendMessage(player, factory.getMainName(), "game");
     }
 
     public void save() {

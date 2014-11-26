@@ -9,6 +9,9 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.codec.textline.LineDelimiter;
+import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.api.interfaces.network.NetworkConnector;
@@ -18,6 +21,9 @@ import org.rushland.plugin.enums.PluginType;
 import org.rushland.plugin.games.GameManager;
 import org.rushland.plugin.games.entities.GameTypeProperty;
 import org.rushland.utils.TimeUtils;
+
+import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 
 /**
  * Managed by romain on 31/10/2014.
@@ -38,10 +44,20 @@ public class PluginNetworkService extends NetworkConnector {
 
     @Override
     protected void configure() {
+        connector.getFilterChain().addLast("game-codec-filter",
+                new ProtocolCodecFilter(
+                        new TextLineCodecFactory(Charset.forName("UTF8"), LineDelimiter.NUL,
+                                new LineDelimiter("\n\0"))));
         IoHandler handler = new PluginNetworkHandler();
         injector.injectMembers(handler);
 
         connector.setHandler(handler);
+    }
+
+    public void start() {
+        configure();
+        network = connector.connect(new InetSocketAddress("127.0.0.1", 550)).getSession();
+        network.write(factory.getName()+"!");
     }
 
     public void dispatchTo(Player player, String server) {
