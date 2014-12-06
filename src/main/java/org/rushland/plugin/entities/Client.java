@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.rushland.api.interfaces.database.model.annotations.PrimaryQueryField;
 import org.rushland.api.interfaces.database.model.annotations.QueryField;
-import org.rushland.database.PluginDatabaseService;
 import org.rushland.plugin.PluginFactory;
 import org.rushland.plugin.games.entities.GameProfile;
 import org.rushland.plugin.network.PluginNetworkService;
@@ -44,9 +43,10 @@ public class Client {
     @Getter
     @Setter
     private GameProfile gameProfile;
+    @Setter
+    @Getter
+    private boolean died;
 
-    @Inject
-    PluginDatabaseService database;
     @Inject
     JavaPlugin plugin;
     @Inject

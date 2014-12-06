@@ -17,6 +17,7 @@ import org.rushland.utils.FileUtils;
 import org.rushland.utils.TimeUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -96,10 +97,10 @@ public class DefaultGameMod implements GameMod {
     }
 
     private void removeWorld() {
-        if(plugin.getServer().unloadWorld(world, true)) {
+        if(plugin.getServer().unloadWorld(world, true)) { System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA");
             FileUtils.remove(mapInstance);
             mapInstance = null;
-        } else {
+        } else {System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
                     removeWorld();
@@ -141,6 +142,7 @@ public class DefaultGameMod implements GameMod {
 
             GameTeam winners = null;
             client.getPlayer().teleport(waitWorld.getSpawnLocation());
+            client.returnToMain();
 
             if (state != BoardState.FULL) return;
 
@@ -240,7 +242,7 @@ public class DefaultGameMod implements GameMod {
     }
 
     private void giveRewards(GameTeam team) {
-        List<Client> mirror = team.getClients(); //concurrent exception fixed
+        List<Client> mirror = Arrays.asList(team.getClients().toArray(new Client[1])); //concurrent exception fixed
         for(Client client: mirror) {
             team.getClients().remove(client);
             client.setGameProfile(null);

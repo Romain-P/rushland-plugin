@@ -43,7 +43,6 @@ public class ClientLogListener extends ImprovedListener {
         if(inject) client.create();
 
 
-
         factory.getClients().put(client.getUuid(), client);
     }
 
