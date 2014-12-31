@@ -97,10 +97,10 @@ public class DefaultGameMod implements GameMod {
     }
 
     private void removeWorld() {
-        if(plugin.getServer().unloadWorld(world, true)) { System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA");
+        if(plugin.getServer().unloadWorld(world, true)) { 
             FileUtils.remove(mapInstance);
             mapInstance = null;
-        } else {System.out.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+        } else {
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
                     removeWorld();
