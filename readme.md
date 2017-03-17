@@ -17,9 +17,6 @@ Rushland-folder
  - lobby3-subfolder
  - pvp-subfolder
 
-I just want to specify that only the rush gamemod's running.I have made a good code & you can create your gamemod easily.
-You have to finishe item & bags managers too, i had not the time to finish that and really, i don't want to finish that fucking code XD
-It was so long to develop this plugin but i have made in my opinion a good project using guice.
-
-Network per plugin using Mina to manage load-balancing communication.
-You have so to compile Rushland-Network.
+I just want to specify that only the rush gamemod's running.
+Network using Mina to manage load-balancing communication.
+You have so to compile Rushland-Network. (check @my projects)
